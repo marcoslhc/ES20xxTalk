@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section data-markdown>
+				<script type="text/template">
+					# ES6 - ES2017 - ESNext
+				</script>
+			</section>
+			<section data-markdown>
+				<script type="text/template">
+					## Naming Conventions
+					- Current: ES &lt;Release Year&gt; (ES2015 - Aprox *Stage-4*)
+					- Next: ESNext (Will be ES2016 - Aprox *Stage-3*)
+					- Under Discussion: ES &lt;Release Year&gt; (ES2017 - Aprox *Stage-2*)
+
+					That means that every year we should see a couple new features.
+				</script>
+			</section>
+			<section>
+				<h2>Maturity Stages (Proposals)</h2>
+
+				<section data-markdown>
+					<script type="text/template">
+						- **stage-0 *(Strawman)***
+							- People talking about it
+							- There might be a library somewhere. Remember promises?
+							- The main concern is that the interface could change and break code. Remember Promises?
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						- **stage-1 *(Proposal)***
+							- There's a High Level API designed
+							- The comitee will keep discussing
+							- At least someone championed a Polyfill or Demo
+							- Same concerns here, but at least you can have a lib you can fork
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						- **stage-2 *(Draft)***
+							- All mayor semantics, syntax and API covered
+							- Experimental implementation. Expected to be included.
+							- At this point It's somewhat safe to use in internal products
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						- **stage-3 *(Candidate)***
+							- Complete spec.
+							- Spec compliant implementation
+							- At this point go ahead and implement some cool stuff, but you might still need the transpiler
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						- **stage-4 *(Finished)***
+							- All mayor ES implementation ships with the feature
+							- Use the feature, use a polyfill. You'll always gonna need a polyfill :(
+					</script>
+				</section>
+			</section>
+			<section data-markdown>
+				<script type="text/template">
+					## Resources about ECMAScript Roadmap
+					- Can I use but for ES6+ http://kangax.github.io/compat-table/es6/
+					- The TC39 WG https://github.com/tc39/ecma262#ecmascript
+					- And for the lawyers around us: http://www.ecma-international.org/ecma-262/6.0/index.html
+				</script>
+			</section>
+			<section>
+				<section data-markdown>
+					<script type="text/template">
+						## ES2015 Features
+						(Most of them C#-like features pushed by Microsoft)
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						## ES2015 Features
+						### Lexical This and Arrow Functions
+
+						Semantically its the same as a function expression
+						Syntactically can have several forms:
+						- one line: `param => param++`
+						- block
+						```
+						(param1, param2) => {
+							sum = param1 + param2;
+							return sum;
+						}
+						```
+						notice that for more than one arguments the parentheses are required
+						and in the one line form, the expression result is automatically returned
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						## ES2015 Features
+						### Lexical This and Arrow Functions
+
+						It's sugar coating for:
+						```javascript
+						> function concatArray(array) {
+							  return this.concat(array);
+							}
+						> var a = [1, 2, 3]
+						> boundConcat = concatArray.bind(this);
+						> boundConcat([4, 5, 6]);
+						<• [1,2,3,4,5,6]
+						```
+
+						And also helps with the ubiquous
+						```javascript
+						> var _self = this;
+						```
+
+						*Personal note*: I only use them for the succint syntax, other than than, unbound this is a consequence of prototypal inheritance and that's ok
+					</script>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>ES2015 Features</h2>
+					<h3>Classes</h3>
+					<p>Another C#-friendly thing pushed by Microsoft</p>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						Like I said, it's sugar coating for prototypal inheritance with some limitations to the super access
+						It's syntax is pretty basic:
+						```
+						class Classname {
+							constructor (x) {
+								this.x = x
+							},
+							someMethod() {
+								this.x++;
+								return this.x
+							}
+							get x() {
+								return this.x;
+							}
+							set x(newX) {
+								this.x += newX
+							}
+						}
+						```
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						This is (roughly) translated into:
+						```
+						function Classname(x) {
+							this.x = x;
+							return x;
+						}
+
+						Classname.prototype.someMethod = function () {
+							this.x++;
+							return this.x
+						}
+
+						Object.defineProperty(Classname.prototype, 'x', {
+							enumerable: true,
+							configurable: true,
+							writable: true,
+							get: function () {
+								return this.x;
+							},
+							set: function (newX) {
+								this.x += newX
+							}
+						})
+						```
+					</script>
+				</section>
+			</section>
+			<section>
+				<section data-markdown>
+					<script type="text/template">
+						## ES2015 Features
+
+						### Enhanced Object Literals
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+					### __proto__ assignment
+					```
+					function OneSweetObject(name) {
+						this.name = name;
+						return this;
+					}
+
+					OneSweetObject.prototype.getName = function () {
+						return this.name + ', Dude!';
+					}
+
+					var obj1 = new OneSweetObject('Dude!');
+
+					var obj = {
+						__proto__: obj1
+					}
+
+					obj.name = 'Sweet';
+
+					console.log(obj.getName()); // Sweet, Dude!
+					```
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+					### Property Shorthand
+					```
+					let crazy = function (name) {
+						return name + ', Dude!';
+					}
+
+					var obj = {
+						crazy
+					}
+
+					console.log(obj.crazy('Sweet')); // Sweet, Dude!
+					```
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+					### Method declaration
+					```
+					var obj = {
+						name: 'Sweet',
+						crazy(name) {
+							return name + ', Dude!';
+						}
+					}
+
+					console.log(obj.crazy('Sweet')); // Sweet, Dude!
+					```
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+					### Computed Properties
+					```
+					var crazy = 'd';
+
+					var obj = {
+						name: 'Sweet',
+						[(() => crazy.toUpperCase())()]() {
+							return this.name + ', Dude!';
+						}
+					}
+
+					console.log(obj.D())
+					```
+					</script>
+				</section>
+			</section>
+			<section>
+				<section data-markdown>
+					<script type="text/template">
+						## Template Strings (FTW!)
+						### Multiline strings
+
+						```
+							console.log(`'Twas brillig, and the slithy toves
+								Did gyre and gimble in the wabe;
+								All mimsy were the borogoves,
+								And the mome raths outgrabe.`);
+						```
+
+						Try 👆🏽that with regular strings
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						## Template Strings (FTW!)
+						### String Interpolation like Python, Ruby or other languages
+						```
+						var user = {
+							firstName: 'Foxy',
+							lastName: 'Shepherdshill'
+						}
+
+						var audience = ['Ladies', 'Gentelmen'];
+
+						var s = `${audience.join(' and ')}, please welcome ${user.firstName} Von ${user.lastName}`);
+
+						console.log(s); // Ladies and Gentelmen, please welcome Foxy Von Shepherdshill
+						```
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						## Template Strings (FTW!)
+						### Postprocessors
+						```
+						function emphasis(strings, ...values) {
+							values.forEach(function (elm) {
+								elm = '<b>' + elm + '</b>';
+							});
+							return strings.reduce(function (p, c, idx, lst) {
+								return c + ' ' + (elm[idx] || '');
+							}, '');
+						}
+
+						var s = emphasis`${audience.join(' and ')}, please welcome ${user.firstName} Von ${user.lastName}`);
+
+						// <b>Ladies and Gentelmen</b>, please welcome <b>Foxy</b> Von <b>Shepherdshill</b>
+						```
+
+						This means that we could write our own template minilanguages (and that's what react is about);
+					</script>
+				</section>
+			</section>
+			<section>
+				<section data-markdown>
+					<script type="text/template">
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+					</script>
+				</section>
+			</section>
+		</div>
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+		// More info https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			history: true,
+
+			// More info https://github.com/hakimel/reveal.js#dependencies
+			dependencies: [{
+				src: 'plugin/markdown/marked.js'
+			}, {
+				src: 'plugin/markdown/markdown.js'
+			}, {
+				src: 'plugin/notes/notes.js',
+				async: true
+			}, {
+				src: 'plugin/highlight/highlight.js',
+				async: true,
+				callback: function() {
+					hljs.initHighlightingOnLoad();
+				}
+			}]
+		});
+	</script>
+</body>
+
+</html>
