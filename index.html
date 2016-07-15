@@ -127,7 +127,7 @@
 						It's sugar coating for:
 						```javascript
 						> function concatArray(array) {
-							  return this.concat(array);
+								return this.concat(array);
 							}
 						> var a = [1, 2, 3]
 						> boundConcat = concatArray.bind(this);
@@ -141,6 +141,34 @@
 						```
 
 						*Personal note*: I only use them for the succint syntax, other than than, unbound this is a consequence of prototypal inheritance and that's ok
+					</script>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						## ES2015 Features
+						### Block Scope on top of lexical scope (`let`)
+
+						Let is the new var. Still get hoisted but on top of the block, not the function definition;
+
+						Also have basic "static check". Once a variable is declared with let, cannot be redeclared inside the block;
+
+						```
+						function f() {
+							{
+								let x;
+								{
+									// okay, block scoped name
+									const x = "sneaky";
+									// error, const
+									x = "foo";
+								}
+								// okay, declared with `let`
+								x = "bar";
+								// error, already declared in block
+								let x = "inner";
+							}
+						}
+						```
 					</script>
 				</section>
 			</section>
@@ -344,14 +372,82 @@
 			<section>
 				<section data-markdown>
 					<script type="text/template">
+						## Other features
+						### Destructuring
+						```
+						let [a, b] === [1, 2, 3]
+						a === 1 //true
+						b === 2 // true
+						```
+						```
+						function retObj() {
+							return {
+								a: 1,
+								b: 2,
+								c: 3
+							};
+						}
+
+						let {a, b} = retObj()
+
+						a === 1 // true
+						b === 2 // true
+						```
 					</script>
 				</section>
 				<section data-markdown>
 					<script type="text/template">
+					## Other features: Arguments
+					### default
+					```
+					function (a, isVideo = true) {
+						let b = {}
+						b = normalize(a);
+						if (isVideo) {
+							b.videoLength = a.getInfo().videoLength()
+						}
+						return b;
+					}
+					```
 					</script>
 				</section>
 				<section data-markdown>
 					<script type="text/template">
+						## Other features: Arguments
+						### rest and spread
+						```
+						function sum(a, ...rest) {
+							return a + rest.reduce((p, c) => p + c);
+						}
+
+						sum(1, 2, 3, 4) // 10
+
+						function sum(a, b, c) {
+							return a + b + c;
+						};
+
+						sum(...[1, 2, 3]); // 6
+						```
+					</script>
+				</section>
+			</section>
+			<section>
+				<section data-markdown>
+					<script type="text/template">
+						## For the next Session
+
+						More advanced features, features "we kind of know already" will be dicussed in a later session
+
+						- Symbols
+						- Iterator protocols
+						- Generators
+						- Maps and Sets
+						- Proxies
+						- Unicode support
+						- Promises
+						- Numeric Literlas
+						- New Methods for old APIs
+						- Built-in Subclassing
 					</script>
 				</section>
 			</section>
